@@ -15,21 +15,21 @@ spec:
     - "phase-1"
     - "phase-2"
   steps:
-    clone:
-      title: "Cloning repository"
-      type: "git-clone"
-      repo: "carsongee/tensorflow"
-      # CF_BRANCH value is auto set when pipeline is triggered
-      # Learn more at codefresh.io/docs/docs/codefresh-yaml/variables/
-      revision: "${{CF_BRANCH}}"
-      git: "github-cg"
-      stage: "clone"
+    # clone:
+    #   title: "Cloning repository"
+    #   type: "git-clone"
+    #   repo: "carsongee/tensorflow"
+    #   # CF_BRANCH value is auto set when pipeline is triggered
+    #   # Learn more at codefresh.io/docs/docs/codefresh-yaml/variables/
+    #   revision: "${{CF_BRANCH}}"
+    #   git: "github-cg"
+    #   stage: "clone"
 
     build:
       title: "Building Docker image"
       type: "build"
       image_name: "carsongee/tensorflow/componentA"
-      working_directory: "${{clone}}/componentA"
+      working_directory: "componentA"
       tag: "${{CF_BRANCH_TAG_NORMALIZED}}"
       dockerfile: "Dockerfile"
       stage: "build"

@@ -9,6 +9,13 @@ stages:
   - "report"
 
 steps:
+  clone:
+    title: Cloning repository
+    type: git-clone
+    repo: carsongee/tensorflow
+    revision: ${{CF_BRANCH}}
+    git: github-cg
+    stage: plan
 
 
   # TODO: Generate pipelines to run
@@ -16,24 +23,26 @@ steps:
     title: Run component A
     image: codefresh/cli
     stage: fanout
+    working_directory: ${{clone}}
     commands:
-      - codefresh run -y componentA/.cicd/codefresh.yaml --pack-name large
+      - codefresh run -y componentA/.cicd/codefresh.yml --pack-name large
     when:
       steps:
-        - name: main_clone
+        - name: clone
           on:
-            - finished
+            - success
   run_component_b:
     title: Run component B
     image: codefresh/cli
     stage: fanout
+    working_directory: ${{clone}}
     commands:
-      - codefresh run -y componentB/.cicd/codefresh.yaml --pack-name large
+      - codefresh run -y componentB/.cicd/codefresh.yml --pack-name large
     when:
       steps:
-        - name: main_clone
+        - name: clone
           on:
-            - finished
+            - success
 
   evaluate_pipelines:
     image: alpine:latest

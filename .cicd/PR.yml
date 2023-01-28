@@ -1,0 +1,73 @@
+pipeline:
+  name: PR
+  identifier: PR
+  projectIdentifier: Tensorflow
+  orgIdentifier: default
+  tags: {}
+  properties:
+    ci:
+      codebase:
+        connectorRef: githubcg
+        build: <+input>
+  stages:
+    - stage:
+        name: Build
+        identifier: Build
+        description: ""
+        type: CI
+        spec:
+          cloneCodebase: true
+          infrastructure:
+            type: VM
+            spec:
+              type: Pool
+              spec:
+                poolName: PR
+                harnessImageConnectorRef: account.harnessImage
+                os: Linux
+          execution:
+            steps:
+              - step:
+                  type: BuildAndPushECR
+                  name: Build and Push to ECR_1
+                  identifier: BuildandPushtoECR_1
+                  spec:
+                    connectorRef: drcicd
+                    region: us-east1
+                    account: AKIAXJ7OUUYN4XFX3LGA
+                    imageName: harness/carsongee/tensorflow
+                    tags:
+                      - <+pipeline.sequenceId>
+                    dockerfile: component/Dockerfile
+    - stage:
+        name: Test
+        identifier: Test
+        description: ""
+        type: CI
+        spec:
+          cloneCodebase: true
+          serviceDependencies:
+            - identifier: Main_Image
+              name: Main Image
+              type: Service
+              spec:
+                connectorRef: drcicd
+                image: harness/carsongee/tensorflow:<+pipeline.sequenceId>
+          execution:
+            steps:
+              - step:
+                  type: Run
+                  name: Unit Test
+                  identifier: Unit_Test
+                  spec:
+                    connectorRef: drcicd
+                    image: harness/carsongee/tensorflow:<+pipeline.sequenceId>
+                    shell: Bash
+                    command: pytest pytest --junitxml=testReport.xml
+                    reports:
+                      type: JUnit
+                      spec:
+                        paths:
+                          - testReport.xml
+          infrastructure:
+            useFromStage: Build

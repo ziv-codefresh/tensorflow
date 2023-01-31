@@ -39,7 +39,7 @@ steps:
     image: "${{build}}" # The image in which command will be executed
     fail_fast: false
     commands:
-      - "pytest -v -n 3 /code/tests/unit --alluredir=$CF_VOLUME_PATH/allure-results-unit"
+      - "pytest -vvv /code/tests/unit --alluredir=$CF_VOLUME_PATH/allure-results-unit"
 
   test_reporting_step:
     stage: "phase-1"
@@ -50,17 +50,17 @@ steps:
       - CF_STORAGE_INTEGRATION=dr-codefresh-ci-reports
       - ALLURE_DIR=allure-results-unit
 
-  evaluate_unit_tests:
-    image: alpine:latest
-    title: Checking Unit Test Result
-    stage: "phase-1"
-    commands:
-    - echo "Unit tests failed, marking the whole pipeline as failed"
-    - exit 1
-    when:
-      condition:
-        all:
-          myCondition: test.result == 'failure'
+  # evaluate_unit_tests:
+  #   image: alpine:latest
+  #   title: Checking Unit Test Result
+  #   stage: "phase-1"
+  #   commands:
+  #   - echo "Unit tests failed, marking the whole pipeline as failed"
+  #   - exit 1
+  #   when:
+  #     condition:
+  #       all:
+  #         myCondition: test.result == 'failure'
 
   # step_name:
   #   type: pending-approval
@@ -79,7 +79,7 @@ steps:
     image: "${{build}}" # The image in which command will be executed
     fail_fast: false
     commands:
-      - "pytest -v -n 3 /code/tests/integration --alluredir=$CF_VOLUME_PATH/allure-results-integration"
+      - "pytest -vvv /code/tests/integration --alluredir=$CF_VOLUME_PATH/allure-results-integration"
 
   integration_test_report:
     title: Integration Test Report

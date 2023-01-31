@@ -29,21 +29,17 @@ steps:
     dockerfile: "Dockerfile"
     stage: "build"
 
-  phase_1_parallel:
-    type: parallel
-    stage: "phase-1"
-    steps:
-      lint:
-        title: "Linter"
-        image: "${{build}}" # The image in which command will be executed
-        commands:
-          - "pylint --rcfile /code/.pylintrc /code/component /code/tests"
-      test:
-        title: "Running Tests"
-        image: "${{build}}" # The image in which command will be executed
-        fail_fast: false
-        commands:
-          - "pytest -n 3 /code/tests/unit --alluredir=$CF_VOLUME_PATH/allure-results-unit"
+  lint:
+    title: "Linter"
+    image: "${{build}}" # The image in which command will be executed
+    commands:
+      - "pylint --rcfile /code/.pylintrc /code/component /code/tests"
+  test:
+    title: "Running Tests"
+    image: "${{build}}" # The image in which command will be executed
+    fail_fast: false
+    commands:
+      - "pytest -v -n 3 /code/tests/unit --alluredir=$CF_VOLUME_PATH/allure-results-unit"
 
   test_reporting_step:
     stage: "phase-1"
@@ -66,15 +62,15 @@ steps:
         all:
           myCondition: test.result == 'failure'
 
-  step_name:
-    type: pending-approval
-    stage: "phase-2"
-    title: Start Phase 2
-    description: Should we start phase 2 testing?
-    timeout:
-      duration: 48
-      finalState: approved
-      timeUnit: hours
+  # step_name:
+  #   type: pending-approval
+  #   stage: "phase-2"
+  #   title: Start Phase 2
+  #   description: Should we start phase 2 testing?
+  #   timeout:
+  #     duration: 48
+  #     finalState: approved
+  #     timeUnit: hours
 
   # TODO: Use dynamic pipelines instead. Use different test suite
   integration_test:
@@ -83,7 +79,7 @@ steps:
     image: "${{build}}" # The image in which command will be executed
     fail_fast: false
     commands:
-      - "pytest -n 3 /code/tests/integration --alluredir=$CF_VOLUME_PATH/allure-results-integration"
+      - "pytest -v -n 3 /code/tests/integration --alluredir=$CF_VOLUME_PATH/allure-results-integration"
 
   integration_test_report:
     title: Integration Test Report

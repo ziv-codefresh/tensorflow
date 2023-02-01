@@ -39,7 +39,7 @@ steps:
     image: "${{build}}" # The image in which command will be executed
     fail_fast: false
     commands:
-      - "pytest -vvv /code/tests/unit --alluredir=$CF_VOLUME_PATH/allure-results-unit"
+      - "pytest -vvv -n 15 /code/tests/unit --alluredir=$CF_VOLUME_PATH/allure-results-unit"
 
   test_reporting_step:
     stage: "phase-1"
@@ -79,7 +79,7 @@ steps:
     image: "${{build}}" # The image in which command will be executed
     fail_fast: false
     commands:
-      - "pytest -vvv /code/tests/integration --alluredir=$CF_VOLUME_PATH/allure-results-integration"
+      - "pytest -vvv -n 15 /code/tests/integration --alluredir=$CF_VOLUME_PATH/allure-results-integration"
 
   integration_test_report:
     title: Integration Test Report
